@@ -21,9 +21,9 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
 
     protected void processUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+//TODO refactoring!
         response.setContentType("text/html; charset=utf-8 ");
-        Subscriber subscriber = new Subscriber();
+//        Subscriber subscriber = new Subscriber();
         Map<String, String> dictionary = new HashMap<String, String>();
 
         try {
