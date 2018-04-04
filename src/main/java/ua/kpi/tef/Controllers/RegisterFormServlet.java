@@ -1,9 +1,5 @@
 package main.java.ua.kpi.tef.Controllers;
 
-import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-import main.java.ua.kpi.tef.model.Subscriber;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,7 +19,7 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
 
 //        response.setContentType("text/html");
 //        response.setCharacterEncoding("UTF-8");
@@ -38,12 +34,11 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
             throws ServletException, IOException {
         response.setContentType("text/html; charset=utf-8 ");
         dictionaryValues = new HashMap<String, String>();
-        dictionaryErrors = new ArrayList<String>();
+        dictionaryErrors = new ArrayList<>();
         processUser(request, response);
     }
 
-    //TODO refactor this shit
-    protected void processUser(HttpServletRequest request, HttpServletResponse response)
+    private void processUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         //(expression, List<parameters>)
@@ -83,13 +78,12 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
     private void addNotEmptyToDictionaryValues(HttpServletRequest request) {
         ArrayList<String> keysParameters = (ArrayList<String>) Collections.list(request.getParameterNames());
         try {
-            for (int i = 0; i < keysParameters.size(); ++i) {
-                String key = keysParameters.get(i);
+            for (String key : keysParameters) {
                 checkValueEmpty(key, request.getParameter(key));
                 dictionaryValues.put(key, request.getParameter(key));
             }
         } catch (IOException e) {
-            request.setAttribute("errors", (String) e.getMessage());
+            request.setAttribute("errors", e.getMessage());
         }
     }
 
