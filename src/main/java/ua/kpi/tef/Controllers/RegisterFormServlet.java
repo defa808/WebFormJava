@@ -41,52 +41,18 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
         dictionaryErrors = new ArrayList<String>();
         processUser(request, response);
     }
-//TODO refactor this shit
+
+    //TODO refactor this shit
     protected void processUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ArrayList<String> keysParameters = (ArrayList<String>) Collections.list(request.getParameterNames());
 
         //(expression, List<parameters>)
         Map<String, ArrayList<String>> expressionParameters = new HashMap<String, ArrayList<String>>();
+        initExpresionParameters(expressionParameters);
 
-        expressionParameters.put(expressionString,
-                new ArrayList<String>(Arrays.asList("name", "surname", "patronymic", "login", "cityOfResidence", "street")));
-        expressionParameters.put(expressionMobileNumber,
-                new ArrayList<String>(Arrays.asList("mobileNumber", "mobileNumber2")));
-        expressionParameters.put(expressionHomeNumber,
-                new ArrayList<String>(Arrays.asList("homeNumber")));
-        expressionParameters.put(expressionEmail,
-                new ArrayList<String>(Arrays.asList("email")));
-        expressionParameters.put(expressionSkype,
-                new ArrayList<String>(Arrays.asList("skype")));
-        expressionParameters.put(expressionAddressIndex,
-                new ArrayList<String>(Arrays.asList("index")));
-        expressionParameters.put(expressionAddresHomeNumber,
-                new ArrayList<String>(Arrays.asList("apartmentNumber")));
+        addNotEmptyToDictionaryValues(request);
 
-        try
-
-        {
-            for (int i = 0; i < keysParameters.size(); ++i) {
-                String key = keysParameters.get(i);
-                checkValueEmpty(key, request.getParameter(key));
-                dictionaryValues.put(key, request.getParameter(key));
-            }
-
-        } catch (IOException e)
-
-        {
-            request.setAttribute("errors", (String) e.getMessage());
-        }
-
-        for (String expression : expressionParameters.keySet()) {
-            for (String fieldName : expressionParameters.get(expression)) {
-                String fieldValue = request.getParameter(fieldName);
-                if (!checkCorrect(fieldValue, expression))
-                    dictionaryErrors.add(fieldName);
-            }
-        }
-
+        addNotCorrectToErrorDictionary(request, expressionParameters);
 
         if (dictionaryErrors.isEmpty())
             getServletContext().getRequestDispatcher("/success.jsp").forward(request, response);
@@ -94,13 +60,47 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
         request.setAttribute("dictionaryValues", dictionaryValues);
         request.setAttribute("dictionaryErrors", dictionaryErrors);
 
-        getServletContext().
+        getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+    }
 
-                getRequestDispatcher("/index.jsp").
+    private void initExpresionParameters(Map<String, ArrayList<String>> expressionParameters) {
+        expressionParameters.put(expressionString,
+                new ArrayList<>(Arrays.asList("name", "surname", "patronymic", "login", "cityOfResidence", "street")));
+        expressionParameters.put(expressionMobileNumber,
+                new ArrayList<>(Arrays.asList("mobileNumber", "mobileNumber2")));
+        expressionParameters.put(expressionHomeNumber,
+                new ArrayList<>(Arrays.asList("homeNumber")));
+        expressionParameters.put(expressionEmail,
+                new ArrayList<>(Arrays.asList("email")));
+        expressionParameters.put(expressionSkype,
+                new ArrayList<>(Arrays.asList("skype")));
+        expressionParameters.put(expressionAddressIndex,
+                new ArrayList<>(Arrays.asList("index")));
+        expressionParameters.put(expressionAddresHomeNumber,
+                new ArrayList<>(Arrays.asList("apartmentNumber")));
+    }
 
-                forward(request, response);
+    private void addNotEmptyToDictionaryValues(HttpServletRequest request) {
+        ArrayList<String> keysParameters = (ArrayList<String>) Collections.list(request.getParameterNames());
+        try {
+            for (int i = 0; i < keysParameters.size(); ++i) {
+                String key = keysParameters.get(i);
+                checkValueEmpty(key, request.getParameter(key));
+                dictionaryValues.put(key, request.getParameter(key));
+            }
+        } catch (IOException e) {
+            request.setAttribute("errors", (String) e.getMessage());
+        }
+    }
 
-//        request.setAttribute("group", GroupSubscriber.getCollection());
+    private void addNotCorrectToErrorDictionary(HttpServletRequest request, Map<String, ArrayList<String>> expressionParameters) {
+        for (String expression : expressionParameters.keySet()) {
+            for (String fieldName : expressionParameters.get(expression)) {
+                String fieldValue = request.getParameter(fieldName);
+                if (!checkCorrect(fieldValue, expression))
+                    dictionaryErrors.add(fieldName);
+            }
+        }
     }
 
     private void checkValueEmpty(String fieldName, String value) throws IOException {
