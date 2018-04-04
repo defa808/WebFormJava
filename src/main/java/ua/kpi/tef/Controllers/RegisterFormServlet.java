@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 @WebServlet("/RegisterFormServlet")
 public class RegisterFormServlet extends HttpServlet implements RegisterFormExpression {
 
-    private Map<String, String> dictionaryValues = new HashMap<String, String>();
-    private ArrayList<String> dictionaryErrors = new ArrayList<String>();
+    private Map<String, String> dictionaryValues;
+    private ArrayList<String> dictionaryErrors;
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,7 +37,8 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html; charset=utf-8 ");
-
+        dictionaryValues = new HashMap<String, String>();
+        dictionaryErrors = new ArrayList<String>();
         processUser(request, response);
 
     }
@@ -76,6 +77,7 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
             dictionaryErrors.add("login");
         }
         if (!checkCorrect(request.getParameter("homeNumber"), expressionHomeNumber)) {
+            System.out.println(request.getParameter("homeNumber"));
             dictionaryErrors.add("homeNumber");
         }
         if (!checkCorrect(request.getParameter("mobileNumber"), expressionMobileNumber)) {
@@ -100,12 +102,13 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
             dictionaryErrors.add("street");
         }
 
-        if (!checkCorrect(request.getParameter("apartmentNumber"), expressionAddressIndex)) {
+        if (!checkCorrect(request.getParameter("apartmentNumber"), expressionAddresHomeNumber)) {
             dictionaryErrors.add("apartmentNumber");
         }
 
         if (dictionaryErrors.isEmpty())
             getServletContext().getRequestDispatcher("/success.jsp").forward(request, response);
+
 
 
         request.setAttribute("dictionaryValues", dictionaryValues);
@@ -124,10 +127,8 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
     }
 
     private boolean checkCorrect(String value, String patternExpression) {
-        System.out.println(patternExpression);
         Pattern pattern = Pattern.compile(patternExpression);
         Matcher matcher = pattern.matcher(value);
-        System.out.println("end check");
         return matcher.matches();
     }
 
