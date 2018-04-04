@@ -40,80 +40,65 @@ public class RegisterFormServlet extends HttpServlet implements RegisterFormExpr
         dictionaryValues = new HashMap<String, String>();
         dictionaryErrors = new ArrayList<String>();
         processUser(request, response);
-
     }
-
+//TODO refactor this shit
     protected void processUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ArrayList<String> keysParameters = (ArrayList<String>) Collections.list(request.getParameterNames());
 
-//        Subscriber subscriber = new Subscriber();
+        //(expression, List<parameters>)
+        Map<String, ArrayList<String>> expressionParameters = new HashMap<String, ArrayList<String>>();
 
-        int indexParameter = 0;
+        expressionParameters.put(expressionString,
+                new ArrayList<String>(Arrays.asList("name", "surname", "patronymic", "login", "cityOfResidence", "street")));
+        expressionParameters.put(expressionMobileNumber,
+                new ArrayList<String>(Arrays.asList("mobileNumber", "mobileNumber2")));
+        expressionParameters.put(expressionHomeNumber,
+                new ArrayList<String>(Arrays.asList("homeNumber")));
+        expressionParameters.put(expressionEmail,
+                new ArrayList<String>(Arrays.asList("email")));
+        expressionParameters.put(expressionSkype,
+                new ArrayList<String>(Arrays.asList("skype")));
+        expressionParameters.put(expressionAddressIndex,
+                new ArrayList<String>(Arrays.asList("index")));
+        expressionParameters.put(expressionAddresHomeNumber,
+                new ArrayList<String>(Arrays.asList("apartmentNumber")));
 
-        try {
+        try
+
+        {
             for (int i = 0; i < keysParameters.size(); ++i) {
-                indexParameter = i;
                 String key = keysParameters.get(i);
                 checkValueEmpty(key, request.getParameter(key));
                 dictionaryValues.put(key, request.getParameter(key));
             }
 
-        } catch (IOException e) {
+        } catch (IOException e)
+
+        {
             request.setAttribute("errors", (String) e.getMessage());
         }
-//TODO refactoring!
 
-        if (!checkCorrect(request.getParameter("name"), expressionString)) {
-            dictionaryErrors.add("name");
-        }
-        if (!checkCorrect(request.getParameter("surname"), expressionString)) {
-            dictionaryErrors.add("surname");
-        }
-        if (!checkCorrect(request.getParameter("patronymic"), expressionString)) {
-            dictionaryErrors.add("patronymic");
-        }
-        if (!checkCorrect(request.getParameter("login"), expressionString)) {
-            dictionaryErrors.add("login");
-        }
-        if (!checkCorrect(request.getParameter("homeNumber"), expressionHomeNumber)) {
-            System.out.println(request.getParameter("homeNumber"));
-            dictionaryErrors.add("homeNumber");
-        }
-        if (!checkCorrect(request.getParameter("mobileNumber"), expressionMobileNumber)) {
-            dictionaryErrors.add("mobileNumber");
-        }
-        if (!checkCorrect(request.getParameter("mobileNumber2"), expressionMobileNumber)) {
-            dictionaryErrors.add("mobileNumber2");
-        }
-        if (!checkCorrect(request.getParameter("email"), expressionEmail)) {
-            dictionaryErrors.add("email");
-        }
-        if (!checkCorrect(request.getParameter("skype"), expressionSkype)) {
-            dictionaryErrors.add("skype");
-        }
-        if (!checkCorrect(request.getParameter("index"), expressionAddressIndex)) {
-            dictionaryErrors.add("index");
-        }
-        if (!checkCorrect(request.getParameter("cityOfResidence"), expressionString)) {
-            dictionaryErrors.add("cityOfResidence");
-        }
-        if (!checkCorrect(request.getParameter("street"), expressionString)) {
-            dictionaryErrors.add("street");
+        for (String expression : expressionParameters.keySet()) {
+            for (String fieldName : expressionParameters.get(expression)) {
+                String fieldValue = request.getParameter(fieldName);
+                if (!checkCorrect(fieldValue, expression))
+                    dictionaryErrors.add(fieldName);
+            }
         }
 
-        if (!checkCorrect(request.getParameter("apartmentNumber"), expressionAddresHomeNumber)) {
-            dictionaryErrors.add("apartmentNumber");
-        }
 
         if (dictionaryErrors.isEmpty())
             getServletContext().getRequestDispatcher("/success.jsp").forward(request, response);
 
-
-
         request.setAttribute("dictionaryValues", dictionaryValues);
         request.setAttribute("dictionaryErrors", dictionaryErrors);
-        getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+
+        getServletContext().
+
+                getRequestDispatcher("/index.jsp").
+
+                forward(request, response);
 
 //        request.setAttribute("group", GroupSubscriber.getCollection());
     }
